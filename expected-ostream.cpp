@@ -1,8 +1,9 @@
 #if 0
 g++ -std=c++23 $0 -o exe -Wall -Werror -Wextra -pedantic-errors \
     && ./exe $@
-rm exe
-exit
+RET=$?
+rm -f exe
+exit $RET
 #endif
 
 #include <expected>
