@@ -7,16 +7,24 @@ exit $RET
 #endif
 
 #include <array>
+#include <concepts>
 #include <iomanip>
 #include <iostream>
 #include <ranges>
+
+template<typename T, size_t N>
+concept RangeOfSize =
+  std::ranges::sized_range<T> &&
+  requires { T::size() == N; }
+;
+
 
 struct UUID {
   const std::array<const uint8_t, 16> uuid;
 
   UUID() : uuid(std::array<const uint8_t, 16>{
     0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-  }) {}
+  }) { std::cout << "default" << std::endl; }
   UUID(const char* v) : uuid(std::array<const uint8_t, 16>{
     static_cast<uint8_t>(v[0]),
     static_cast<uint8_t>(v[1]),
@@ -34,26 +42,30 @@ struct UUID {
     static_cast<uint8_t>(v[13]),
     static_cast<uint8_t>(v[14]),
     static_cast<uint8_t>(v[15]),
-  }) {}
-  UUID(std::ranges::input_range auto&& uuid) :
-    uuid(std::array<const uint8_t, 16>{
-      uuid[0],
-      uuid[1],
-      uuid[2],
-      uuid[3],
-      uuid[4],
-      uuid[5],
-      uuid[6],
-      uuid[7],
-      uuid[8],
-      uuid[9],
-      uuid[10],
-      uuid[11],
-      uuid[12],
-      uuid[13],
-      uuid[14],
-      uuid[15],
-    }) {}
+  }) { std::cout << "char*" << std::endl; }
+  UUID(std::ranges::sized_range auto&& uuid) :
+    uuid([uuid]{
+      static_assert(uuid.size() == 16, "UUIDs must be 16 bytes long");
+
+      return std::array<const uint8_t, 16>{
+        uuid[0],
+        uuid[1],
+        uuid[2],
+        uuid[3],
+        uuid[4],
+        uuid[5],
+        uuid[6],
+        uuid[7],
+        uuid[8],
+        uuid[9],
+        uuid[10],
+        uuid[11],
+        uuid[12],
+        uuid[13],
+        uuid[14],
+        uuid[15],
+      };
+    }()) { std::cout << "concept thing" << std::endl; }
 
   friend std::ostream& operator<<(std::ostream& os, const UUID& uuid) {
     auto flags = os.flags();
@@ -82,9 +94,13 @@ int main() {
       1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16,
       17, 18, 19, 20, 21, 22, 23, 24, 25
     };
-    const UUID c{std::span(cArr).subspan(2, 18)};
+    const UUID c{std::span(cArr).subspan<2, 16>()};
     std::cout << c << std::endl;
 
     const UUID d{"aaaaaaaabbbbbbbb"};
     std::cout << d << std::endl;
+
+    // static constexpr const std::array<const uint8_t, 2> eArr{99, 100};
+    // const UUID e{eArr};
+    // std::cout << e << std::endl;
 }
