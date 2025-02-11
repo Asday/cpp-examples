@@ -44,7 +44,7 @@ struct UUID {
     static_cast<uint8_t>(v[15]),
   }) { std::cout << "char*" << std::endl; }
   UUID(std::ranges::sized_range auto&& uuid) :
-    uuid([uuid]{
+    uuid([&uuid]{
       static_assert(uuid.size() == 16, "UUIDs must be 16 bytes long");
 
       return std::array<const uint8_t, 16>{
