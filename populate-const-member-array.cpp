@@ -1,9 +1,10 @@
-#if 0
+#if 0 /*
 g++ -std=c++23 $0 -o exe -Wall -Werror -Wextra -pedantic-errors \
     && ./exe $@
 RET=$?
 rm -f exe
 exit $RET
+*/
 #endif
 
 #include <array>
