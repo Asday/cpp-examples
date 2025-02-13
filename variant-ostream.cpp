@@ -29,9 +29,6 @@ struct B {
     }
 };
 
-template<typename T>
-concept Any = true;
-
 template <typename T, typename... Ts>
 std::ostream& operator<<(
     std::ostream& os,
