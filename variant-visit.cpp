@@ -14,16 +14,16 @@ struct A {};
 struct B {};
 
 struct ABVisitor {
-  void operator()([[maybe_unused]] const A& a) {
+  void operator()([[maybe_unused]] const A& a) const noexcept {
     std::cout << "a" << std::endl;
   }
 
-  void operator()([[maybe_unused]] const B& a) {
+  void operator()([[maybe_unused]] const B& a) const noexcept{
     std::cout << "b" << std::endl;
   }
 };
 
-static ABVisitor abVisitor{};
+static constexpr ABVisitor abVisitor{};
 
 int main() {
   const std::variant<A, B> a{A()};
