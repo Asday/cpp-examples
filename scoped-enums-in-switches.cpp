@@ -24,7 +24,9 @@ int f(const A& a) {
     case A::b: return 10;
   }
 
-  throw std::runtime_error("error: stop using `static_cast()`");
+  // Personal preference.
+  // throw std::runtime_error("error: stop using `static_cast()`");
+  std::unreachable();
 }
 
 int main() {
